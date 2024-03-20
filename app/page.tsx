@@ -1,7 +1,5 @@
-"use client"
-import { useEffect, useState } from "react";
-import axios from 'axios';
 import ChatComponent from "@/components/ChatComponent";
+import React from 'react';
 
 
 export default function Home() {
@@ -10,11 +8,8 @@ export default function Home() {
  
 
   return (
- <> 
- 
- 
- <ChatComponent></ChatComponent>
- </>
-
+    <> 
+        <ChatComponent />
+    </>
   );
 }
