@@ -31,7 +31,7 @@ const apiUrl = "http://localhost:8082/api/v1/chat-proxy"
       console.log(response);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { name: 'IA', backgroundColor: 'bg-gray-600', darkbackgroundColor: 'bg-gray-700', content: response?.data?.message as string },
+        { name: 'IA', backgroundColor: 'bg-secondary-100', darkbackgroundColor: 'bg-gray-700', content: response?.data?.message as string },
       ]);
     })
     .catch((error) => {
