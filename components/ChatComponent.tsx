@@ -6,7 +6,7 @@ import ChatButton from './Buttons';
 import { MessageComponent, MessageComponentProps } from './MessageComponent';
 
 const ChatComponent: React.FC = () => {
-const apiUrl = "http://localhost:8000/v1/"
+const apiUrl = "http://localhost:8082/api/v1/chat-proxy"
   // useState to hold messages
   const [messages, setMessages] = useState<MessageComponentProps[]>([
     { name: 'IA', backgroundColor: 'bg-secondary-100', darkbackgroundColor: 'bg-gray-700' , content:'IA hello world' },
@@ -26,12 +26,12 @@ const apiUrl = "http://localhost:8000/v1/"
     ]);
 
 
-    axios.post(apiUrl, {user_input: message})
+    axios.post(apiUrl, {chatQuestion: message})
     .then((response) => {
       console.log(response);
       setMessages((prevMessages) => [
         ...prevMessages,
-        { name: 'IA', backgroundColor: 'bg-secondary-100', darkbackgroundColor: 'bg-gray-700', content: response?.data?.message as string },
+        { name: 'IA', backgroundColor: 'bg-secondary-100', darkbackgroundColor: 'bg-gray-700', content: response?.data?.chatResponse as string },
       ]);
     })
     .catch((error) => {
