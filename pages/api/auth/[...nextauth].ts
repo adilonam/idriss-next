@@ -36,7 +36,9 @@ const authOptions: AuthOptions = {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.expiresAt = account.expires_at;
+        console.log(token)
         return token;
+
       }
       console.log(token);
       if (Date.now() < token.expiresAt * 1000 - 60 * 1000) {
