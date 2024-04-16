@@ -1,43 +1,79 @@
-import NextAuth from 'next-auth';
+import NextAuth, { AuthOptions, TokenSet } from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
-import jwt from 'jsonwebtoken'; // import jsonwebtoken
+import { JWT } from "next-auth/jwt";
 
-export default NextAuth({
+function requestRefreshOfAccessToken(token: JWT) {
+  return fetch(`${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/token`, {
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      client_id: process.env.KEYCLOAK_CLIENT_ID!,
+      client_secret: process.env.KEYCLOAK_CLIENT_SECRET!,
+      grant_type: "refresh_token",
+      refresh_token: token.refreshToken!,
+    }),
+    method: "POST",
+    cache: "no-store",
+  });
+}
+
+const authOptions: AuthOptions = {
   providers: [
     KeycloakProvider({
       clientId: process.env.KEYCLOAK_ID!,
       clientSecret: process.env.KEYCLOAK_SECRET!,
+      issuer: process.env.KEYCLOAK_ISSUER!
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.SECRET,
+
   callbacks: {
     async jwt({ token, account }) {
-      if (account?.accessToken) {
-        // Assuming accessToken is a string, as it should normally be.
-        token.accessToken = account.accessToken as string;
-        
+      if (account) {
+        token.idToken = account.id_token;
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.expiresAt = account.expires_at;
+        return token;
+      }
+      console.log(token);
+      if (Date.now() < token.expiresAt * 1000 - 60 * 1000) {
+        return token;
+      } else {
         try {
-          // Decode the JWT, which should return null if the token is not correctly formatted or encoded.
-          const decodedToken = jwt.decode(token.accessToken);
-  
-          // Ensure that decodedToken is an object before trying to access properties.
-          if (typeof decodedToken === 'object' && decodedToken !== null) {
-            token.roles = decodedToken['realm_access']?.roles ?? [];
-          }
+          const response = await requestRefreshOfAccessToken(token);
+
+          const tokens: TokenSet = await response.json();
+
+          if (!response.ok) throw tokens;
+
+          const updatedToken: JWT = {
+            ...token,
+            idToken: tokens.id_token,
+            accessToken: tokens.access_token!,
+            expiresAt: Math.floor(
+              Date.now() / 1000 + (tokens.expires_in as number)
+            ),
+            refreshToken: tokens.refresh_token ?? token.refreshToken,
+          };
+          return updatedToken;
         } catch (error) {
-          console.error('Error decoding accessToken:', error);
+          console.error("Error refreshing access token", error);
+          return { ...token, error: "RefreshAccessTokenError" };
         }
       }
-      return token;
     },
     async session({ session, token }) {
-      session.user = session.user ?? {};
-      session.user.roles = token.roles ?? [];
       session.accessToken = token.accessToken;
+      session.idToken = token.idToken;
+      session.error = token.error;
       return session;
     },
   },
+};
 
+const handler = NextAuth(authOptions);
 
-});
-
-
+export default handler;

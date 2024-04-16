@@ -1,24 +1,27 @@
-import React from 'react';
 import NextAuthProvider from '@/components/NextAuthProvider';
 import { Session } from 'next-auth';
 
 import "./globals.css"
-import Navbar from '@/components/Navbar';
-// Include session in the type definition for props
+import {ComplexNavbar} from '@/components/ComplexNavbar';
+import Sidebar from '@/components/Sidebar';
+import Footer from '@/components/Footer';
+
 type RootLayoutProps = {
   children: React.ReactNode;
-  session: Session | null; // Assuming you want to allow for a null session
+  session: Session | null; 
 };
 
 const RootLayout: React.FC<RootLayoutProps> = ({ children, session }) => {
 
   return (
     <html lang="en">
-      <body>
-          <NextAuthProvider session={session}> 
-          <Navbar />
-            {children}
-          </NextAuthProvider>
+      <body className="p-4">
+            <NextAuthProvider session={session} > 
+              <ComplexNavbar />
+              <Sidebar />
+              {children}
+              <Footer />
+            </NextAuthProvider>
       </body>
     </html>
   );
