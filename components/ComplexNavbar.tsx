@@ -13,6 +13,7 @@ import {
   Avatar,
   Card,
   IconButton,
+  Collapse,
 } from "@material-tailwind/react";
 import {
   CubeTransparentIcon,
@@ -282,14 +283,14 @@ const toggleColorMode = () => {
   }, []);
  
   return (
-    <Navbar placeholder="d" onPointerEnterCapture={()=>console.log('pointer')} onPointerLeaveCapture={()=>console.log('pointer')} className="mx-auto max-w-screen-xl p-2 lg:rounded-xl lg:pl-6"> 
+    <Navbar placeholder="d" onPointerEnterCapture={()=>console.log('pointer')} onPointerLeaveCapture={()=>console.log('pointer')} className="mb-4 w-full p-2 lg:rounded-xl lg:px-12 right-0"> 
       <div className="relative mx-auto flex items-center justify-between text-blue-gray-900">
         <Typography placeholder="d" onPointerEnterCapture={()=>console.log('pointer')} onPointerLeaveCapture={()=>console.log('pointer')}
           as="a"
           href="#"
           className="mr-4 ml-2 cursor-pointer py-1.5 font-medium"
         >
-          Material Tailwind
+          Code 212
         </Typography>
         <div className="hidden lg:block">
           <NavList />
@@ -322,9 +323,9 @@ const toggleColorMode = () => {
                   </button>
         <ProfileMenu />
       </div>
-      <MobileNav open={isNavOpen} className="overflow-scroll">
+      <Collapse  open={isNavOpen} className="overflow-scroll">
         <NavList />
-      </MobileNav>
+      </Collapse >
     </Navbar>
   );
 }
