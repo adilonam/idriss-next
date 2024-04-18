@@ -1,5 +1,5 @@
 'use client'
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { signIn } from "next-auth/react";
 import {
   Navbar,
@@ -26,6 +26,8 @@ import {
   PowerIcon,
   RocketLaunchIcon,
   Bars2Icon,
+  SunIcon,
+  MoonIcon,
 } from "@heroicons/react/24/solid";
  
 // profile menu component
@@ -51,8 +53,14 @@ const profileMenuItems = [
     icon: PowerIcon,
   },
 ];
- 
+
+
+
 function ProfileMenu() {
+
+
+
+
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
  
   const closeMenu = () => setIsMenuOpen(false);
@@ -81,6 +89,7 @@ function ProfileMenu() {
           />
         </Button>
       </MenuHandler>
+      
       <MenuList placeholder="d" onPointerEnterCapture={()=>console.log('pointer')} onPointerLeaveCapture={()=>console.log('pointer')}  className="p-1">
         {profileMenuItems.map(({ label, icon }, key) => {
           const isLastItem = key === profileMenuItems.length - 1;
@@ -111,6 +120,8 @@ function ProfileMenu() {
           );
         })}
       </MenuList>
+
+    
     </Menu>
   );
 }
@@ -232,7 +243,34 @@ function NavList() {
 }
  
 export function ComplexNavbar() {
+
+
   const [isNavOpen, setIsNavOpen] = React.useState(false);
+
+
+  
+  const [isDarkMode, setIsDarkMode] = useState(false)
+useEffect(() => {
+  const prefersDarkMode = window.matchMedia(
+    '(prefers-color-scheme: dark)'
+  ).matches
+  setIsDarkMode(prefersDarkMode)
+}, [])
+
+useEffect(() => {
+  if (isDarkMode) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}, [isDarkMode])
+ 
+
+
+const toggleColorMode = () => {
+  setIsDarkMode(!isDarkMode)
+}
+
  
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
  
@@ -269,6 +307,19 @@ export function ComplexNavbar() {
         <Button placeholder="d" onPointerEnterCapture={()=>console.log('pointer')} onPointerLeaveCapture={()=>console.log('pointer')} onClick={()=>signIn()} size="sm" variant="text">
           <span>Log In</span>
         </Button>
+        <button
+                    type='button'
+                    onClick={toggleColorMode}
+                    className='relative rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800'
+                  >
+                    <span className='absolute -inset-1.5' />
+                    <span className='sr-only'>Toggle Dark Mode</span>
+                    {isDarkMode ? (
+                      <SunIcon className='h-6 w-6' />
+                    ) : (
+                      <MoonIcon className='h-6 w-6' />
+                    )}
+                  </button>
         <ProfileMenu />
       </div>
       <MobileNav open={isNavOpen} className="overflow-scroll">

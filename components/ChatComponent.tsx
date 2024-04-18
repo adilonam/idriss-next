@@ -6,7 +6,9 @@ import ChatButton from './Buttons';
 import { MessageComponent, MessageComponentProps } from './MessageComponent';
 
 const ChatComponent: React.FC = () => {
-const apiUrl = "http://localhost:8082/api/v1/chat-proxy"
+
+
+const apiUrl =   `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat-proxy`
   // useState to hold messages
   const [messages, setMessages] = useState<MessageComponentProps[]>([
     { name: 'IA', backgroundColor: 'bg-secondary-100', darkbackgroundColor: 'bg-gray-700' , content:'IA hello world' },
